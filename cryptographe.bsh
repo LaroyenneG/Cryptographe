@@ -1,11 +1,11 @@
 #!/bin/bash
 #===============================================================================
 #
-#          FILE:  crypto.bsh
+#          FILE:  cryptographe.bsh
 #
-#         USAGE:  ./crypto.bsh [OPTION] [PATH]
+#         USAGE:  ./cryptographe.bsh [OPTION] [PATH]
 #
-#   DESCRIPTION: Recursive cryptographe
+#   DESCRIPTION: Recursive cryptographegraphe
 #
 #       OPTIONS:  -c -d
 #  REQUIREMENTS:  bash openssl
@@ -19,11 +19,10 @@
 #===============================================================================
 
 
-#openssl enc -base64 -in fic1 -out fic1.enc -pass pass:aaaa
-
 MOD_OP=0;
 CRYPT_FILE_EXT=".enc";
 PASSWORD="";
+BASE="-base64"; 
 
 
 function recursiveSearch() {
@@ -56,7 +55,16 @@ function crypt() {
         exit;
     fi
 
-    echo "$1$CRYPT_FILE_EXT";
+    errors=$(openssl enc "$BASE" -in "$1" -out "$1$CRYPT_FILE_EXT" -pass "pass:$PASSWORD" 2>&1 >/dev/null);
+
+    if [[ "$errors" != "" ]]; then
+        echo "cannot crypt file $1" >&2;
+        exit;
+    fi
+
+    if [[ -e "$1$CRYPT_FILE_EXT" ]]; then
+        rm "$1";
+    fi
 }
 
 function decrypt() {
@@ -72,7 +80,7 @@ function decrypt() {
 
 
 if [[ $# -lt 2 ]]; then
-	echo "Uage : crypto [OPTION] [PATH]";
+	echo "Uage : cryptographe [OPTION] [PATH]";
 	exit;
 fi
 
